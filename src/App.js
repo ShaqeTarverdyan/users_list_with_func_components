@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState }  from 'react';
+import UsersList from './components/UsersList';
+const URL = "https://api.github.com/users";
 
-function App() {
+const App = () =>  {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetchUsers();
+  },[]);
+
+  const fetchUsers = () => {
+    fetch(URL)
+      .then(res => res.json())
+      .then(res => setUsers(res))
+  }
+
+  const deleteCurrentUser = (id) => {
+      const updatedUsers = users.filter(user => user.id != id);
+      setUsers(updatedUsers)
+  }
+
+  const editCurrentUser = (currentUser) => {
+      const updatedUsers = users.map(user => 
+        user.id === currentUser.id ? {...user,...currentUser} : user
+      );
+      setUsers(updatedUsers)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <UsersList 
+        users={users}
+        deleteCurrentUser={deleteCurrentUser}
+        editCurrentUser={editCurrentUser}
+      />
   );
 }
 
